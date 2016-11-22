@@ -5,7 +5,7 @@ var Schema = mongoose.Schema({
   names: String,
   lastnames: String,
   email: String,
-  reviewer: {type: mongoose.Schema.ObjectId, ref:"medic"}
+  professionalId: String
 });
 
-module.exports = mongoose.model('user', Schema, 'user');
+module.exports = mongoose.model('medic', Schema, 'medic');
