@@ -36,7 +36,7 @@ function addUser(body, callback){
                     lastnames: body.lastname,
                     password: body.password,
                     email: body.email,
-                    reviewer: null
+                    reviewer: body.reviewer
                 });
 
                 newUser.save(function(err){
@@ -94,6 +94,15 @@ function addMedic(body, callback){
     });
 }
 
+function cleanMedicsData(medics){
+    medics.map(function(item){
+        item.professionalId = null;
+        item.password = null;
+    });
+
+    return medics;
+}
+
 
 // Register User in App
 module.exports.registerUser = function(body, callback){
@@ -125,4 +134,53 @@ module.exports.registerUser = function(body, callback){
     });
 };
 
-module.exports.isUserInMedicalCenter = function(user, callback){};
+module.exports.loginUser = function(body, callback){
+    var out = {status: "error", message: "", data: {}};
+    User.findOne(body, function(err, user){
+        if(err){
+            out.message = "Error buscando en usuarios";
+            callback(out);
+        }else{
+            if(user){
+                out.status = "success";
+                user.password = null;
+                out.typeUser = "patient";
+                out.data = user;
+                callback(out);
+            }else{
+                Medic.findOne(body, function(err, medic){
+                    if(err){
+                        out.message = "Error buscando en médicos";
+                    }else{
+                        if(medic){
+                            out.status = "success";
+                            medic.password = null;
+                            out.typeUser = "medic";
+                            out.data = medic;
+                        }else{
+                            out.message = "No se ha encontrado algún usuario con estas credenciales";
+                        }
+                    }
+                    callback(out);
+                });
+            }
+        }
+    });
+};
+
+module.exports.getMedics = function(callback){
+    Medic.find({}, function(err, medics){
+        var out = {status: "error", message: "", data: []};
+        if(err){
+            out.message = "Error buscando los médicos";
+        }else{
+            if(medics.length<=0){
+                out.message = "No hay médicos registrados. debe seleccionar uno para poder registrarse";
+            }else{
+                out.status = "success";
+                out.data = cleanMedicsData(medics);
+            }
+        }
+        callback(out);
+    });
+};

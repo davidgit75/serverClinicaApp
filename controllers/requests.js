@@ -14,7 +14,15 @@ router.post("/app/user/new", function(req, res){
 router.post("/app/user/login", function(req, res){
   console.log("LOGIN");
   console.log(req.body);
-  res.send({msg:"Haciendo login"});
+  utils.loginUser(req.body, function(out){
+    res.send(out);
+  });
+});
+
+router.post("/app/medics", function(req, res){
+  utils.getMedics(function(out){
+    res.send(out);
+  });
 });
 
 
