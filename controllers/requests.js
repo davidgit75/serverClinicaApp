@@ -3,27 +3,16 @@ var router = express.Router();
 var utils = require("./dbUtils");
 
 // Register new user
-router.post("/app/user/new", function(req, res){
-  console.log("REGISTER");
-  console.log(req.body);
-  utils.registerUser(req.body, function(out){
-    res.send(out);
-  });
-});
+router.post("/app/user/new", utils.registerUser);
 
-router.post("/app/user/login", function(req, res){
-  console.log("LOGIN");
-  console.log(req.body);
-  utils.loginUser(req.body, function(out){
-    res.send(out);
-  });
-});
+router.post("/app/user/login", utils.loginUser);
 
-router.post("/app/medics", function(req, res){
-  utils.getMedics(function(out){
-    res.send(out);
-  });
-});
+router.post("/app/medics", utils.getMedics);
 
+router.post("/app/user/check", utils.checkUser);
+
+router.post("/app/history/new", utils.createNewHistory);
+
+router.post("/app/history/:identification", utils.getHistoryByPatient);
 
 module.exports = router;

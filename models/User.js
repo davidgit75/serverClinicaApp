@@ -6,7 +6,11 @@ var Schema = mongoose.Schema({
   lastnames: String,
   email: String,
   password: String,
-  reviewer: {type: mongoose.Schema.ObjectId, ref:"medic"}
+  age: String,
+  civil_state: String,
+  sex: String,
+  occupation: String,
+  phone: String,
 });
 
 module.exports = mongoose.model('user', Schema, 'user');
