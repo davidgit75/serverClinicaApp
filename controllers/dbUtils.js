@@ -320,7 +320,7 @@ module.exports.getHistoryByPatient = function(req, res){
                     out.message = "Usuario no encontrado. Imposible obtener historias";
                     res.send(out);
                 }else{
-                    clinicalHistory.find({patient: user._id}).populate("patient medic").exec(function(err, hs){
+                    clinicalHistory.find({patient: user._id}).populate("patient medic medicalcenter").exec(function(err, hs){
                         if(err){
                             out.message = "Error buscando historias clínicas para la identificación " + req.params.identification;
                             res.send(out); 
@@ -334,7 +334,7 @@ module.exports.getHistoryByPatient = function(req, res){
                                     item.medic._id = null;
                                 });
                             }
-                            out.data = hs;
+                            out.data = hs.reverse();
                             res.send(out);
                         }
                     });
