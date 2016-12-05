@@ -128,6 +128,120 @@ function saveDataHistory(id, data, res, out){
 }
 
 
+function setProfile(req, res, out, profile, emptyPassword){
+
+    var dataSet = req.body.data;
+
+    if(profile=="medic"){
+        // Check if password id correct
+        Medic.findOne({identification: req.body.data.identification}, function(err, user){
+            if(err){
+                out.message = "Error buscando el usuario especificado";
+                res.send(out);
+            }else{
+                if(!user){
+                    out.message = "No se ha encontrado el usuario especificado";
+                    res.send(out);
+                }else{
+                    var search = {
+                        identification: req.body.data.identification
+                    };
+
+                    if(!emptyPassword){
+                        search.password = req.body.pass.password;
+                        if(req.body.pass.new_password!==""){
+                            dataSet.password = req.body.pass.new_password;
+                            console.log("dataSet");
+                            console.log(dataSet);
+                        }
+                    }
+
+
+                    Medic.findOne(search, function(errS, userS){
+                        if(err){
+                            out.message = "Error intentando actualizar los datos.";
+                            res.send(out);
+                        }else{
+                            if(!userS){
+                                out.message = "La contraseña ingresada en incorrecta";
+                                res.send(out);
+                            }else{
+                                Medic.update(search, {$set: dataSet},function(errU, tank){
+                                    console.log("UPD");
+                                    console.log(user);
+                                    if(errU){
+                                        out.message = "Error actualizando los datos. Alguno de sus datos están erróneos";
+                                        res.send(out);
+                                    }else{
+                                        out.status = "success";
+                                        out.message = "Datos actualizados exitosamente";
+                                        res.send(out);
+                                    }
+                                });
+                            }
+                        }
+                    });
+                    
+                }
+            }
+        });
+
+    }else if(profile=="patient"){
+        // Check if password id correct
+        User.findOne({identification: req.body.data.identification}, function(err, user){
+            if(err){
+                out.message = "Error buscando el usuario especificado";
+                res.send(out);
+            }else{
+                if(!user){
+                    out.message = "No se ha encontrado el usuario especificado";
+                    res.send(out);
+                }else{
+                    var search = {
+                        identification: req.body.data.identification
+                    };
+
+                    if(!emptyPassword){
+                        search.password = req.body.pass.password;
+                        if(req.body.pass.new_password!==""){
+                            dataSet.password = req.body.pass.new_password;
+                            console.log("dataSet");
+                            console.log(dataSet);
+                        }
+                    }
+
+                    User.findOne(search, function(errS, userS){
+                        if(err){
+                            out.message = "Error intentando actualizar los datos.";
+                            res.send(out);
+                        }else{
+                            if(!userS){
+                                out.message = "La contraseña ingresada en incorrecta";
+                                res.send(out);
+                            }else{
+                                User.update(search, {$set: dataSet},function(errU, tank){
+                                    console.log("UPD");
+                                    console.log(user);
+                                    if(errU){
+                                        out.message = "Error actualizando los datos. Alguno de sus datos están erróneos";
+                                        res.send(out);
+                                    }else{
+                                        out.status = "success";
+                                        out.message = "Datos actualizados exitosamente";
+                                        res.send(out);
+                                    }
+                                });
+                            }
+                        }
+                    });
+                    
+                }
+            }
+        });
+    }
+}
+
+
 // Register User in App
 module.exports.registerUser = function(req, res){
     var out = {status: "error", message: "", existUser: false, data: {}, userRegistered: false};
@@ -341,5 +455,28 @@ module.exports.getHistoryByPatient = function(req, res){
                 }
             }
         });
+    }
+};
+
+
+
+module.exports.editProfile = function(req, res){
+    console.log("SET PROFILE");
+    console.log(req.body);
+    var out = {status: "error", message: "", data: null};
+
+    if(!req.body){
+        out.message = "Credenciales inválidas";
+        res.send(out);
+    }else{
+        // Check passwords and New password isn't empty
+        if(req.body.pass.password!=="" && req.body.pass.new_password!==""){
+            setProfile(req, res, out, req.body.role, false);
+        }else{
+            if(req.body.pass.password==="" && req.body.pass.new_password===""){
+                // check if password is correct
+                setProfile(req, res, out, req.body.role, true);
+            }
+        }
     }
 };
